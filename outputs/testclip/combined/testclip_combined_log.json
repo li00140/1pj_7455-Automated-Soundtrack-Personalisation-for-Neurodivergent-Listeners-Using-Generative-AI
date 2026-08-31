@@ -1,0 +1,25 @@
+{
+  "clip": "testclip",
+  "profile": "combined",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": true,
+      "output": "outputs/testclip/combined/testclip_combined_dialogue_enhanced.wav"
+    },
+    "sfx": {
+      "generative": true,
+      "output": "outputs/testclip/combined/testclip_combined_sfx_suppressed.wav"
+    },
+    "dsp": {
+      "freq_taming": true,
+      "gains": {
+        "dialogue": 1.4,
+        "music": 0.4,
+        "sfx": 0.35
+      }
+    }
+  },
+  "output_path": "outputs/testclip/combined/testclip_combined_accessible_mix.wav",
+  "duration_s": 29.84
+}

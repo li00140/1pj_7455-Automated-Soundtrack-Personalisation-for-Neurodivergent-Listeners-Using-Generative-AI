@@ -1,0 +1,25 @@
+{
+  "clip": "BTTF_Automation_Test",
+  "profile": "generative",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": true,
+      "output": "outputs/BTTF_Automation_Test/generative/BTTF_Automation_Test_generative_dialogue_enhanced.wav"
+    },
+    "sfx": {
+      "generative": true,
+      "output": "outputs/BTTF_Automation_Test/generative/BTTF_Automation_Test_generative_sfx_suppressed.wav"
+    },
+    "dsp": {
+      "freq_taming": false,
+      "gains": {
+        "dialogue": 1.3,
+        "music": 0.45,
+        "sfx": 0.4
+      }
+    }
+  },
+  "output_path": "outputs/BTTF_Automation_Test/generative/BTTF_Automation_Test_generative_accessible_mix.wav",
+  "duration_s": 29.92
+}

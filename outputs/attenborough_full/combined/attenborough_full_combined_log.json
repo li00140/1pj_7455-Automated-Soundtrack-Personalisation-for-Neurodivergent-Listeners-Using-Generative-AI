@@ -1,0 +1,25 @@
+{
+  "clip": "attenborough_full",
+  "profile": "combined",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": true,
+      "output": "outputs/attenborough_full/combined/attenborough_full_combined_dialogue_enhanced.wav"
+    },
+    "sfx": {
+      "generative": true,
+      "output": "outputs/attenborough_full/combined/attenborough_full_combined_sfx_suppressed.wav"
+    },
+    "dsp": {
+      "freq_taming": true,
+      "gains": {
+        "dialogue": 1.4,
+        "music": 0.4,
+        "sfx": 0.35
+      }
+    }
+  },
+  "output_path": "outputs/attenborough_full/combined/attenborough_full_combined_accessible_mix.wav",
+  "duration_s": 60.16
+}

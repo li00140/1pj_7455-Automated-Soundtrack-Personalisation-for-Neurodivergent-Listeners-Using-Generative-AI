@@ -1,0 +1,25 @@
+{
+  "clip": "attenborough",
+  "profile": "dsp_only",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": false,
+      "output": "stems/attenborough/dialogue.wav"
+    },
+    "sfx": {
+      "generative": false,
+      "output": "stems/attenborough/sfx.wav"
+    },
+    "dsp": {
+      "freq_taming": true,
+      "gains": {
+        "dialogue": 1.5,
+        "music": 0.4,
+        "sfx": 0.4
+      }
+    }
+  },
+  "output_path": "outputs/attenborough/dsp_only/attenborough_dsp_only_accessible_mix.wav",
+  "duration_s": 60.16
+}

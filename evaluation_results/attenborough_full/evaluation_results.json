@@ -1,0 +1,38 @@
+[
+  {
+    "condition": "dsp_only",
+    "si_sdr_mix_db": 5.102,
+    "si_sdr_dialogue_db": 128.267,
+    "pesq_wb": 4.644,
+    "stoi": 1.0,
+    "spectral_centroid_shift_hz": 86.5,
+    "transient_peak_reduction_db": 0.13,
+    "rdir_reference": 1.9952,
+    "rdir_processed": 2.032,
+    "rdir_improvement": 0.0367
+  },
+  {
+    "condition": "generative",
+    "si_sdr_mix_db": -5.108,
+    "si_sdr_dialogue_db": -2.068,
+    "pesq_wb": 1.915,
+    "stoi": 0.8555,
+    "spectral_centroid_shift_hz": 66.2,
+    "transient_peak_reduction_db": -7.45,
+    "rdir_reference": 1.9952,
+    "rdir_processed": 0.6542,
+    "rdir_improvement": -1.341
+  },
+  {
+    "condition": "combined",
+    "si_sdr_mix_db": -3.894,
+    "si_sdr_dialogue_db": -1.244,
+    "pesq_wb": 2.064,
+    "stoi": 0.878,
+    "spectral_centroid_shift_hz": -26.6,
+    "transient_peak_reduction_db": -7.38,
+    "rdir_reference": 1.9952,
+    "rdir_processed": 1.1525,
+    "rdir_improvement": -0.8427
+  }
+]

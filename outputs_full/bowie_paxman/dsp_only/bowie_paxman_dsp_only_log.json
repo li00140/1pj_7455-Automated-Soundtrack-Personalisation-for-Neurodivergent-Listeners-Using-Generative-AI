@@ -1,0 +1,25 @@
+{
+  "clip": "bowie_paxman",
+  "profile": "dsp_only",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": false,
+      "output": "stems/bowie_paxman/dialogue.wav"
+    },
+    "sfx": {
+      "generative": false,
+      "output": "stems/bowie_paxman/sfx.wav"
+    },
+    "dsp": {
+      "freq_taming": true,
+      "gains": {
+        "dialogue": 1.5,
+        "music": 0.4,
+        "sfx": 0.4
+      }
+    }
+  },
+  "output_path": "outputs/bowie_paxman/dsp_only/bowie_paxman_dsp_only_accessible_mix.wav",
+  "duration_s": 27.0
+}

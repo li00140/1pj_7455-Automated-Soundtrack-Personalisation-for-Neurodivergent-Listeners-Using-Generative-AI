@@ -1,0 +1,25 @@
+{
+  "clip": "Bowie_Test",
+  "profile": "dsp_only",
+  "sample_rate": 44100,
+  "stages": {
+    "dialogue": {
+      "generative": false,
+      "output": "stems/Bowie_Test/dialogue.wav"
+    },
+    "sfx": {
+      "generative": false,
+      "output": "stems/Bowie_Test/sfx.wav"
+    },
+    "dsp": {
+      "freq_taming": true,
+      "gains": {
+        "dialogue": 1.5,
+        "music": 0.4,
+        "sfx": 0.4
+      }
+    }
+  },
+  "output_path": "outputs/Bowie_Test/dsp_only/Bowie_Test_dsp_only_accessible_mix.wav",
+  "duration_s": 27.0
+}

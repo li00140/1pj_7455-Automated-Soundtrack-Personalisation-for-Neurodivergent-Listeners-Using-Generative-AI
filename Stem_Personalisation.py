@@ -1,14 +1,8 @@
 """
-EEEM004 — Stem Personalisation Engine
-======================================
-Takes separated stems (dialogue / music / sfx) and applies configurable
-sensory-preference adjustments before remixing into a single accessible track.
+Stem Personalisation
 
-Designed around real, named sensory accommodations rather than generic
-"EQ knobs" — each parameter maps to a documented hyperacusis/sensory
-processing concern so the choices are defensible in a dissertation write-up.
+Takes separated stems (dialogue / music / sfx) and applies configurable adjustments before remixing into a single accessible track.
 
-Core operations, applied per-stem then summed:
 1. Frequency taming   — attenuate a configurable band (commonly cited
                          trigger range for hyperacusis/misophonia is
                          2-8 kHz: sibilance, cymbals, alarms, cutlery)
@@ -17,10 +11,6 @@ Core operations, applied per-stem then summed:
                          crushing the overall dynamic range
 3. Stem gain           — simple relative loudness balance (dialogue
                          boost / background reduce, as before)
-
-This module contains NO Jupyter/display code — it is pure DSP so it can be
-imported by the SAM pipeline notebook, a future test notebook, or eventually
-a real interface, without modification.
 """
 
 from __future__ import annotations

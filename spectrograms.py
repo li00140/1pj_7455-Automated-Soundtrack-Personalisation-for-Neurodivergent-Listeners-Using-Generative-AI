@@ -2,9 +2,8 @@
 
 """
 spectrograms.py
------------------------------------------
-Generate publication-quality spectrogram
-comparison figures for all four processing
+
+Generate spectrogram comparison figures for all four processing
 conditions.
 
 Usage:
@@ -26,10 +25,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-
-# -------------------------------------------------------
-# Helpers
-# -------------------------------------------------------
 
 def load_audio(path):
     if not os.path.isfile(path):
@@ -59,9 +54,7 @@ def compute_mel_spectrogram(y, sr):
     return mel_db
 
 
-# -------------------------------------------------------
 # Main
-# -------------------------------------------------------
 
 def main():
 
@@ -101,10 +94,8 @@ def main():
 
     audio = {}
     specs = []
-
-    # --------------------------------------------
+    
     # Load audio
-    # --------------------------------------------
 
     for name, path in files.items():
 
@@ -124,9 +115,7 @@ def main():
     global_min = min(np.min(s) for s in specs)
     global_max = max(np.max(s) for s in specs)
 
-    # --------------------------------------------
-    # Figure
-    # --------------------------------------------
+    # Figures
 
     fig = plt.figure(
         figsize=(15, 14),

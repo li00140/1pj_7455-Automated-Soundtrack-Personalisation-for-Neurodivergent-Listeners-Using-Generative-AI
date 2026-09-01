@@ -1,7 +1,5 @@
 """
-EEEM004 — Objective Evaluation Module
-======================================
-Louis Ilett | Supervisor: Prof Philip Jackson | University of Surrey
+Evaluation
 
 Computes objective audio quality and accessibility metrics for comparing
 system outputs across the four evaluation conditions:
@@ -12,7 +10,7 @@ system outputs across the four evaluation conditions:
     combined        → AI + DSP stacked
 
 Metrics
--------
+
 1.  SI-SDR (Scale-Invariant Signal-to-Distortion Ratio)
     Standard in source separation literature. Measures how well the
     processing preserves the target signal vs introducing artefacts.
@@ -45,20 +43,6 @@ Metrics
     Higher ratio = dialogue more prominent relative to background.
     Captures the practical accessibility goal.
 
-Usage
------
-    from evaluation import EvaluationSuite
-    suite = EvaluationSuite(reference_dir="outputs/baseline/",
-                             sample_rate=44100)
-    suite.add_condition("dsp_only",   "outputs/dsp_only/")
-    suite.add_condition("generative", "outputs/generative/")
-    suite.add_condition("combined",   "outputs/combined/")
-    results = suite.run()
-    suite.report(results, output_dir="evaluation_results/")
-
-Dependencies (already in your venv from generative_pipeline install)
------
-    pip install pesq pystoi torchmetrics soundfile librosa numpy
 """
 
 from __future__ import annotations
@@ -73,7 +57,7 @@ import numpy as np
 import soundfile as sf
 
 
-# ── Optional imports with graceful fallback ────────────────────────────────
+# ── Optional imports  ────────────────────────────────
 try:
     from pesq import pesq
     _HAS_PESQ = True
@@ -91,9 +75,7 @@ except ImportError:
     print("  Install with: pip install pystoi")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # METRIC FUNCTIONS
-# ═══════════════════════════════════════════════════════════════════════════
 
 def si_sdr(reference: np.ndarray, estimate: np.ndarray) -> float:
     """
@@ -193,9 +175,7 @@ def stoi_score(reference: np.ndarray, estimate: np.ndarray,
         return None
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # EVALUATION SUITE
-# ═══════════════════════════════════════════════════════════════════════════
 
 class EvaluationSuite:
     """
@@ -460,11 +440,8 @@ class EvaluationSuite:
                         " & ".join(row_vals) + " \\\\\n")
             f.write("\\hline\n\\end{tabular}\n\\end{table}\n")
         print(f"[EvaluationSuite] LaTeX table saved to {latex_path}")
+ 
 
-
-# ═══════════════════════════════════════════════════════════════════════════
-# STANDALONE USAGE — run directly to evaluate two directories
-# ═══════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     import argparse

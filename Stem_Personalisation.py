@@ -20,9 +20,7 @@ import librosa
 import soundfile as sf
 
 
-# ---------------------------------------------------------------------------
 # Parameter definitions
-# ---------------------------------------------------------------------------
 
 @dataclass
 class FrequencyTamingConfig:
@@ -64,8 +62,8 @@ class PersonalisationProfile:
     stem_gain: StemGainConfig = field(default_factory=StemGainConfig)
 
 
-# Example presets — these are illustrative starting points for your
-# evaluation chapter, not validated clinical recommendations.
+# Presets
+
 PRESETS = {
     "default": PersonalisationProfile(name="default"),
     "hyperacusis_high_freq": PersonalisationProfile(
@@ -89,9 +87,7 @@ PRESETS = {
 }
 
 
-# ---------------------------------------------------------------------------
 # DSP building blocks
-# ---------------------------------------------------------------------------
 
 def apply_frequency_taming(y: np.ndarray, sr: int, cfg: FrequencyTamingConfig) -> np.ndarray:
     """
@@ -162,9 +158,7 @@ def normalise_peak(y: np.ndarray, target_peak: float = 0.95) -> np.ndarray:
     return (y / peak * target_peak).astype(np.float32)
 
 
-# ---------------------------------------------------------------------------
 # Top-level pipeline
-# ---------------------------------------------------------------------------
 
 def process_stem(y: np.ndarray, sr: int, profile: PersonalisationProfile,
                   gain: float) -> np.ndarray:

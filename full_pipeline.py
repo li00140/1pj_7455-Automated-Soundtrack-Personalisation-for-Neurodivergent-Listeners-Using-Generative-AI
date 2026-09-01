@@ -1,35 +1,18 @@
 """
-EEEM004 — Single-Clip End-to-End Runner
-=========================================
-Louis Ilett | Supervisor: Prof Philip Jackson | University of Surrey
+Single-Clip End-to-End Runner
 
 Runs ONE test clip through all four evaluation conditions
 (baseline / dsp_only / generative / combined) and then computes
 objective metrics comparing them — in one command.
 
-This exists so you can validate the whole chain (separation → personalisation
-→ evaluation) end-to-end on a single clip BEFORE scaling up to a full batch
-of clips. Get this working first; batch processing is just a loop around
-this once it's solid.
-
 Prerequisites
--------------
-You must already have three separated stems from SAM Audio (web), placed
-in a folder, named exactly:
+
     <input_dir>/dialogue.wav
     <input_dir>/music.wav
     <input_dir>/sfx.wav
 
-Usage
------
-    # Fast path — DSP only, no GPU needed, good for first smoke-test:
-    python run_full_pipeline.py --input_dir stems/clip1 --clip_name clip1 --skip_generative
-
-    # Full path — includes Parler-TTS + AudioLDM2 (needs GPU):
-    python run_full_pipeline.py --input_dir stems/clip1 --clip_name clip1
-
 Output structure
------------------
+
     outputs/<clip_name>/baseline/...
     outputs/<clip_name>/dsp_only/...
     outputs/<clip_name>/generative/...      (skipped if --skip_generative)

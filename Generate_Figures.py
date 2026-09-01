@@ -1,16 +1,3 @@
-"""
-EEEM004 MSc Project — Pipeline Diagram Generator
-Generates Figure 1 (Demucs pipeline) and Figure 3 (SAM Audio pipeline)
-as publication-quality PNG files suitable for the dissertation.
-
-Run with:
-    python generate_pipeline_figures.py
-
-Output:
-    figure1_demucs_pipeline.png
-    figure3_samaudio_pipeline.png
-"""
-
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
@@ -74,9 +61,7 @@ def arrow(ax, x0, y0, x1, y1, label=None):
                 fontfamily=FONT, va="center", style="italic")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # FIGURE 1 — Demucs-based pipeline
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def make_figure1():
     fig, ax = plt.subplots(figsize=(13, 5.5))

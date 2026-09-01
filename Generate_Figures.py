@@ -171,9 +171,7 @@ def make_figure1():
     print("Saved: figure1_demucs_pipeline.png")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # FIGURE 3 — SAM Audio pipeline
-# ═══════════════════════════════════════════════════════════════════════════════
 
 def make_figure3():
     fig, ax = plt.subplots(figsize=(13, 5.5))

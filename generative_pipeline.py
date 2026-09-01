@@ -1,44 +1,13 @@
 """
-EEEM004 — Generative Soundtrack Personalisation Pipeline
-=========================================================
-Louis Ilett | Supervisor: Prof Philip Jackson | University of Surrey
+Generative Pipeline
 
-Architecture
-------------
-Stage 1 — Source separation      : SAM Audio (text-prompted)
-Stage 2 — Dialogue enhancement   : Parler-TTS style transfer
-           (ISSE-inspired: rewrites dialogue with clearer, calmer prosody
-            while preserving the original words via Whisper transcription)
-Stage 3 — SFX event suppression  : AudioLDM2 inpainting
-           (detects high-energy transients via CLAP, regenerates them
-            as softer versions using text-conditioned latent diffusion)
-Stage 4 — Conventional DSP       : Frequency taming + gain staging
-Stage 5 — Remix                  : Stems recombined + peak normalised
+Dependencies (install into HPC venv)
 
-This replaces the previous purely rule-based Stem_Personalisation.py.
-The DSP stage is kept because it is fast, interpretable, and directly
-comparable against the generative stage — which is exactly what
-Objective 4 of the project requires.
-
-Dependencies (install into your HPC venv)
------------------------------------------
 pip install torch torchaudio transformers diffusers accelerate
 pip install openai-whisper parler-tts
 pip install librosa soundfile numpy
 pip install msclap  # Microsoft CLAP for event detection
 
-Quick-start
------------
-    from generative_pipeline import GenerativePipeline, SensoryProfile, PRESETS
-    pipe = GenerativePipeline(device="cuda")
-    pipe.load_models()
-    result = pipe.run(
-        dialogue_path="dialogue_target.wav",
-        music_path="music_target.wav",
-        sfx_path="sfx_target.wav",
-        profile=PRESETS["hyperacusis_high_freq"],
-        output_dir="outputs/",
-    )
 """
 
 from __future__ import annotations
@@ -61,11 +30,7 @@ import subprocess
 warnings.filterwarnings("ignore")
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 1.  SENSORY PROFILE  (replaces PersonalisationProfile)
-#     Targets are now named by sound *event*, not by neurodivergent condition.
-#     This follows the supervisor's advice from the interim review.
-# ═══════════════════════════════════════════════════════════════════════════════
+# 1.  SENSORY PROFILE
 
 @dataclass
 class EventTargets:
@@ -98,9 +63,6 @@ class DialogueEnhancementConfig:
         "than normal speaking rate. No background noise. No breathiness. "
         "Gentle and neutral in tone."
     )
-    # How much of the rewritten speech to blend with the original.
-    # 0.0 = keep original, 1.0 = full generative rewrite.
-    # Blending preserves speaker identity while shifting prosody.
     blend_alpha: float = 0.65
 
 
@@ -108,7 +70,6 @@ class DialogueEnhancementConfig:
 class SFXSuppressionConfig:
     """Controls the AudioLDM2 generative SFX replacement."""
     enabled: bool = True
-    # How to replace a detected trigger event
     replacement_prompt: str = (
         "a quiet, soft, distant version of the same sound, "
         "reduced in intensity, no sudden peak"
@@ -155,11 +116,10 @@ class SensoryProfile:
 
 
 # ── Presets ──────────────────────────────────────────────────────────────────
-# These are the A/B conditions for your evaluation chapter.
 
 PRESETS: dict[str, SensoryProfile] = {
 
-    # Baseline: no processing at all — used as reference in evaluation
+    # Baseline: no processing at all
     "baseline": SensoryProfile(
         name="baseline",
         use_generative_dialogue=False,
@@ -171,7 +131,7 @@ PRESETS: dict[str, SensoryProfile] = {
     ),
 
     # DSP-only: conventional processing, no generative AI.
-    # This is your Objective 4 comparison condition.
+
     "dsp_only": SensoryProfile(
         name="dsp_only",
         use_generative_dialogue=False,
@@ -194,7 +154,7 @@ PRESETS: dict[str, SensoryProfile] = {
         ),
     ),
 
-    # Combined: generative AI + DSP stacked — likely best subjective result
+    # Combined: generative AI + DSP stacked
     "combined": SensoryProfile(
         name="combined",
         use_generative_dialogue=True,
@@ -273,10 +233,7 @@ PRESETS: dict[str, SensoryProfile] = {
     ),
 }
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# 2.  DSP UTILITIES  (kept from v1, vectorised envelope follower)
-# ═══════════════════════════════════════════════════════════════════════════════
+# 2.  DSP UTILITIES
 
 def _freq_taming(y: np.ndarray, sr: int, cfg: DSPConfig) -> np.ndarray:
     """STFT-domain band attenuation with smooth Hann-windowed transition."""
@@ -303,8 +260,7 @@ def _vectorised_envelope(y: np.ndarray, sr: int,
     r = np.exp(-1.0 / (sr * release_ms / 1000.0))
     abs_y = np.abs(y)
     env = np.zeros_like(abs_y)
-    # Segment-wise: attack segments use coefficient a, release segments use r
-    # Implemented as a recursive scan via cumulative products (fast on numpy)
+
     prev = 0.0
     for i in range(len(abs_y)):
         c = a if abs_y[i] > prev else r
@@ -331,22 +287,7 @@ def _peak_norm(y: np.ndarray, target: float = 0.95) -> np.ndarray:
     return y if peak < 1e-9 else (y / peak * target).astype(np.float32)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 3.  GENERATIVE STAGE A — DIALOGUE ENHANCEMENT  (ISSE-inspired)
-#
-#     Approach: Whisper transcribes the dialogue stem → Parler-TTS regenerates
-#     the speech with a style prompt targeting clarity and calm → the result
-#     is pitch-aligned and blended back with the original.
-#
-#     Why this maps to ISSE: ISSE edits speech characteristics
-#     (rate, breathiness, style) given a text instruction. Parler-TTS is the
-#     closest publicly available model that operates on the same principle —
-#     it conditions generation on a natural language style description.
-#     The key methodological difference is that ISSE edits existing audio;
-#     Parler-TTS regenerates from text. The blend_alpha parameter lets you
-#     control how much of the original vs rewritten speech is used, which
-#     is your main experimental variable for this stage.
-# ═══════════════════════════════════════════════════════════════════════════════
+# 3.  GENERATIVE STAGE A — DIALOGUE ENHANCEMENT
 
 class DialogueEnhancer:
     """
@@ -416,16 +357,6 @@ class DialogueEnhancer:
         # Load original
         original, _ = librosa.load(dialogue_path, sr=sr, mono=True)
 
-        # IMPORTANT: Parler-TTS does NOT preserve word timing — its output
-        # will be a different length and misaligned with the original waveform.
-        # A sample-level blend (alpha * rewritten + (1-alpha) * original) produces
-        # comb-filter artefacts because the two signals are out of phase.
-        #
-        # Correct approach: blend in the *energy envelope* domain rather than
-        # the waveform domain. We shape the rewritten signal to match the
-        # original's RMS envelope, then fade in the rewritten version at alpha.
-        # This retains the original speaker's dynamic phrasing while imposing
-        # the new prosody, without waveform-level cancellation.
 
         # Trim/pad rewritten to original length
         n = len(original)
@@ -468,22 +399,7 @@ class DialogueEnhancer:
         torch.cuda.empty_cache()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# 4.  GENERATIVE STAGE B — SFX EVENT SUPPRESSION  (AudioLDM2 inpainting)
-#
-#     Approach:
-#     a) CLAP scores each short window of the SFX stem against each event
-#        description in EventTargets.suppress.
-#     b) Windows above clap_score_threshold are flagged as trigger events.
-#     c) Each flagged segment is replaced by AudioLDM2 conditioned on
-#        sfx_suppression.replacement_prompt — a softer version of the event.
-#
-#     Why this is genuinely generative: AudioLDM2 is a latent diffusion model
-#     (LDM) for audio. It does not simply attenuate — it generates new audio
-#     content from noise guided by the text prompt. The replacement is a
-#     semantically consistent but perceptually calmer sound, which is
-#     qualitatively different from volume reduction or EQ.
-# ═══════════════════════════════════════════════════════════════════════════════
+# 4.  GENERATIVE STAGE B — SFX EVENT SUPPRESSION
 
 class SFXSuppressor:
     """
@@ -523,7 +439,7 @@ class SFXSuppressor:
         hop = int(self.HOP_S * sr)
         events = []
 
-        # Text embeddings only depend on the prompt list, not the audio window —
+        # Text embeddings only depend on the prompt list, not the audio window
         # compute once outside the loop instead of once per window. On a 60s
         # clip at 0.5s hop that's ~120 redundant calls eliminated.
         text_embeddings = self.clap.get_text_embeddings(targets.suppress)
@@ -533,8 +449,6 @@ class SFXSuppressor:
             start_s = start_sample / sr
             end_s = start_s + self.WINDOW_S
 
-            # msclap API: get_audio_embeddings / get_text_embeddings / compute_similarity
-            # get_audio_text_similarity does not exist in msclap 1.x
             
             import tempfile
             import soundfile as sf
@@ -651,10 +565,7 @@ class SFXSuppressor:
         gc.collect()
         torch.cuda.empty_cache()
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # 5.  MAIN PIPELINE
-# ═══════════════════════════════════════════════════════════════════════════════
 
 class GenerativePipeline:
     """
